@@ -1,0 +1,71 @@
+<link rel="stylesheet" href="./style.css">
+
+
+<body>
+</body>
+
+<script type="module">
+
+  import { Game } from '../src/game.js';
+
+  const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
+
+  class Paddle {
+    x = 0;
+    y = 0;
+    
+    angle = Math.PI / 4;
+    
+    width = 100;
+    height = 10;
+
+    fillStyle = 'red';
+
+    update( dt ) {
+
+    }
+
+    draw( ctx ) {
+      ctx.save();
+
+      ctx.translate( this.x, this.y );
+      ctx.rotate( this.angle );
+      ctx.scale( this.width, this.height );
+
+      ctx.fillStyle = this.fillStyle;
+      ctx.fill( rectPath );
+
+      ctx.restore();
+    }
+  }
+
+  const paddles = [];
+
+  const player = new Paddle();
+  player.x = 200;
+  player.y = 200;
+  
+  paddles.push( player );
+
+  const enemy = new Paddle();
+  enemy.x = 300;
+  enemy.y = 300;
+  enemy.angle = -Math.PI / 4;
+  enemy.fillStyle = 'blue';
+
+  paddles.push( enemy );
+
+  const game = new Game();
+  game.update = ( dt ) => {
+    paddles.forEach( p => p.update( dt ) );
+    
+  };
+
+  game.draw = ( ctx ) => {
+    paddles.forEach( p => p.draw( ctx ) );
+  };
+
+  
+
+</script>
+
