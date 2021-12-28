@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="../style.css">
+
+<body>
+</body>
+
+<script type="module">
+
+  import { Game } from '../src/game.js';
+  import { Entity } from '../src/entity.js';
+  import { Segment } from '../src/segment.js';
+
+  const walls = [
+    new Segment( 100, 100, 200, 150 ),
+    new Segment( 200, 150, 400, 100 ),
+  ];
+
+  class Ball extends Entity {
+    width = 10;
+    height = 10;
+    radius = 10;
+    path = new Path2D( 'M -1 0 A 1 1 0 0 1 1 0 A 1 1 0 0 1 -1 0' );
+
+    dx = 0;
+    dy = 0;
+
+    update( dt ) {
+      this.x += this.dx * dt;
+      this.y += this.dy * dt;
+    }
+  }
+
+  const ball = new Ball( { x: 150, y: 100, fillStyle: 'yellow' } );
+
+  const game = new Game();
+  game.update = ( dt ) => {
+    if ( game.mouseDown ) {
+      ball.x = game.mouseX;
+      ball.y = game.mouseY;
+    }
+  };
+
+  game.draw = ( ctx ) => {
+    walls.forEach( w => w.draw( ctx ) );
+
+    ball.draw( ctx );
+
+    ball.dx = ( game.mouseX - ball.x );
+    ball.dy = ( game.mouseY - ball.y );
+
+    const afterBall = Object.assign( new Ball(), ball );
+
+    const hit = walls[ 0 ].getCollision( afterBall );
+
+    if ( 0 < hit.time && hit.time <= 1 ) {
+
+      afterBall.update( hit.time );
+      afterBall.draw( ctx );
+
+      // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+      const vDotN = ball.dx * hit.normalX + ball.dy * hit.normalY
+      const uX = vDotN * hit.normalX;
+      const uY = vDotN * hit.normalY;
+      const wX = ball.dx - uX;
+      const wY = ball.dy - uY;
+
+      afterBall.dx = wX - uX;
+      afterBall.dy = wY - uY;
+
+      afterBall.update( 1 - hit.time );
+      afterBall.draw( ctx );
+    }
+    else {
+      afterBall.update( 1 );
+      afterBall.draw( ctx );
+    }
+    
+  };
+  
+
+</script>
+
