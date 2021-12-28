@@ -47,14 +47,15 @@
     ball.dx = ( game.mouseX - ball.x );
     ball.dy = ( game.mouseY - ball.y );
 
-    const afterBall = Object.assign( new Ball(), ball );
-
-    const hit = walls.map( 
-      wall => wall.getCollision( afterBall )
-    ).reduce( 
-      ( closest, nextHit ) => nextHit.time < closest.time ? nextHit : closest,
+    const hits = walls.map( 
+      wall => wall.getCollision( ball, 1 )
+    );
+    const hit = hits.reduce( 
+      ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
       { time: Infinity, normalX: 0, normalY: 0 }
     );
+
+    const afterBall = Object.assign( new Ball(), ball );
 
     if ( 0 < hit.time && hit.time <= 1 ) {
 

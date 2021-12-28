@@ -13,10 +13,10 @@ export class Segment {
     this.normalY = ( x1 - x2 ) / len;
   }
 
-  getCollision( entity ) {
+  getCollision( entity, dt ) {
     const distFromLine = (this.x1 - entity.x) * this.normalX + (this.y1 - entity.y) * this.normalY;
 
-    const vDotN = entity.dx * this.normalX + entity.dy * this.normalY;
+    const vDotN = entity.dx * dt * this.normalX + entity.dy * dt * this.normalY;
 
     return {
       time: ( distFromLine + entity.radius ) / vDotN,   // TODO: Sometimes -? Properly incorporate radius
