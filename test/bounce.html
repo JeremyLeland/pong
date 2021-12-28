@@ -49,12 +49,26 @@
 
     const afterBall = Object.assign( new Ball(), ball );
 
-    const hit = walls[ 0 ].getCollision( afterBall );
+    const hit = walls.map( 
+      wall => wall.getCollision( afterBall )
+    ).reduce( 
+      ( closest, nextHit ) => nextHit.time < closest.time ? nextHit : closest,
+      { time: Infinity, normalX: 0, normalY: 0 }
+    );
 
     if ( 0 < hit.time && hit.time <= 1 ) {
 
       afterBall.update( hit.time );
+      afterBall.fillStyle = 'red';
       afterBall.draw( ctx );
+
+      const hitX = afterBall.x, hitY = afterBall.y;
+
+      ctx.beginPath();
+      ctx.moveTo( ball.x, ball.y );
+      ctx.lineTo( hitX, hitY );
+      ctx.strokeStyle = 'green';
+      ctx.stroke();
 
       // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
       const vDotN = ball.dx * hit.normalX + ball.dy * hit.normalY
@@ -67,10 +81,25 @@
       afterBall.dy = wY - uY;
 
       afterBall.update( 1 - hit.time );
+
+      ctx.beginPath();
+      ctx.moveTo( hitX, hitY );
+      ctx.lineTo( game.mouseX, game.mouseY );
+      ctx.strokeStyle = 'blue';
+      ctx.stroke();
+
+      afterBall.fillStyle = 'orange';
       afterBall.draw( ctx );
+
+      ctx.beginPath();
+      ctx.moveTo( hitX, hitY );
+      ctx.lineTo( afterBall.x, afterBall.y );
+      ctx.strokeStyle = 'orange';
+      ctx.stroke();
     }
     else {
       afterBall.update( 1 );
+      afterBall.fillStyle = 'orange';
       afterBall.draw( ctx );
     }
     
