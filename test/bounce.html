@@ -10,6 +10,7 @@
   import { Segment } from '../src/segment.js';
 
   const walls = [
+    new Segment(  50, 200, 100, 100 ),
     new Segment( 100, 100, 200, 150 ),
     new Segment( 200, 150, 400, 100 ),
   ];
@@ -44,11 +45,13 @@
 
     ball.draw( ctx );
 
-    ball.dx = ( game.mouseX - ball.x );
-    ball.dy = ( game.mouseY - ball.y );
+    const dt = 10;
+
+    ball.dx = ( game.mouseX - ball.x ) / dt;
+    ball.dy = ( game.mouseY - ball.y ) / dt;
 
     const hits = walls.map( 
-      wall => wall.getCollision( ball, 1 )
+      wall => wall.getCollision( ball )
     );
     const hit = hits.reduce( 
       ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
@@ -57,7 +60,7 @@
 
     const afterBall = Object.assign( new Ball(), ball );
 
-    if ( 0 < hit.time && hit.time <= 1 ) {
+    if ( 0 < hit.time && hit.time <= dt ) {
 
       afterBall.update( hit.time );
       afterBall.fillStyle = 'red';
@@ -81,7 +84,7 @@
       afterBall.dx = wX - uX;
       afterBall.dy = wY - uY;
 
-      afterBall.update( 1 - hit.time );
+      afterBall.update( dt - hit.time );
 
       ctx.beginPath();
       ctx.moveTo( hitX, hitY );
@@ -99,7 +102,7 @@
       ctx.stroke();
     }
     else {
-      afterBall.update( 1 );
+      afterBall.update( dt );
       afterBall.fillStyle = 'orange';
       afterBall.draw( ctx );
     }
