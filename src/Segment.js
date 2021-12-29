@@ -38,6 +38,8 @@ export class Segment {
     // const uA = ( ( x4 - x3 ) * ( y1 - y3 ) - ( y4 - y3 ) * ( x1 - x3 ) ) / dn;
     // const uB = ( ( x2 - x1 ) * ( y1 - y3 ) - ( y2 - y1 ) * ( x1 - x3 ) ) / dn;
 
+    
+    // Inside segment
     if ( d1 < this.length && d2 < this.length ) {
       return {
         time: hitTime,
@@ -45,13 +47,54 @@ export class Segment {
         normalY: this.normalY,
       };
     }
-    else {
+
+    // First point
+    // See: https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+    const dX = entity.dx;
+    const dY = entity.dy;
+    const fX = entity.x - this.x1;
+    const fY = entity.y - this.y1;
+
+    const a = dX * dX + dY * dY;
+    const b = 2 * ( fX * dX + fY * dY ); 
+    const c = ( fX * fX + fY * fY ) - Math.pow( entity.radius, 2 );
+
+    let disc = b * b - 4 * a * c;
+
+    if ( disc > 0 ) {
+      disc = Math.sqrt( disc );
+
+      const t0 = ( -b - disc ) / ( 2 * a );
+      const t1 = ( -b + disc ) / ( 2 * a );
+
+      const hitTime = t0;// < 0 ? t1 : t0;
+
+      const hitX = entity.x + entity.dx * hitTime;
+      const hitY = entity.y + entity.dy * hitTime;
+
+      let nx = this.x1 - hitX;
+      let ny = this.y1 - hitY;
+      const len = Math.hypot( nx, ny );
+      nx /= len;
+      ny /= len;
+
       return {
-        time: Infinity,
-        normalX: 0,
-        normalY: 0,
-      };
+        time: hitTime,
+        normalX: nx,
+        normalY: ny,
+      }
     }
+    
+    // Second point
+    // else if ( d2 < entity.radius ) {
+
+    // }
+    // Complete miss
+    return {
+      time: Infinity,
+      normalX: 0,
+      normalY: 0,
+    };
   }
 
   draw( ctx ) {
