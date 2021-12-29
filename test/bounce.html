@@ -10,9 +10,9 @@
   import { Segment } from '../src/segment.js';
 
   const walls = [
-    // new Segment(  50, 150, 100, 100 ),
+    new Segment(  50, 150, 100, 100 ),
     new Segment( 100, 100, 200, 150 ),
-    // new Segment( 200, 150, 400, 100 ),
+    new Segment( 200, 150, 400, 100 ),
   ];
 
   class Ball extends Entity {
@@ -28,9 +28,21 @@
       this.x += this.dx * dt;
       this.y += this.dy * dt;
     }
+
+    bounceFrom( hit ) {
+      // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+      const vDotN = this.dx * hit.normalX + this.dy * hit.normalY;
+      const uX = vDotN * hit.normalX;
+      const uY = vDotN * hit.normalY;
+      const wX = this.dx - uX;
+      const wY = this.dy - uY;
+
+      this.dx = wX - uX;
+      this.dy = wY - uY;
+    }
   }
 
-  const ball = new Ball( { x: 100, y: 50, fillStyle: 'yellow' } );
+  const ball = new Ball( { x: 120, y: 50, fillStyle: 'yellow' } );
 
   const game = new Game();
   game.update = ( dt ) => {
@@ -45,66 +57,68 @@
 
     ball.draw( ctx );
 
-    const dt = 10;
+    let dt = 10;
 
     ball.dx = ( game.mouseX - ball.x ) / dt;
     ball.dy = ( game.mouseY - ball.y ) / dt;
 
-    const hits = walls.map( 
-      wall => wall.getCollision( ball )
-    );
-    const hit = hits.reduce( 
-      ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
-      { time: Infinity, normalX: 0, normalY: 0 }
-    );
-
     const afterBall = Object.assign( new Ball(), ball );
 
-    if ( 0 < hit.time && hit.time <= dt ) {
+    let lastWall;
 
-      afterBall.update( hit.time );
-      afterBall.fillStyle = 'red';
-      afterBall.draw( ctx );
+    while ( dt > 0 ) {
+      // TODO: Ignore whatever wall we hit last, so we don't need to account for error below?
+      const hit = walls.filter( w => w != lastWall ).map( 
+        wall => wall.getCollision( afterBall )
+      ).reduce( 
+        ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
+        { time: Infinity, normalX: 0, normalY: 0 }
+      );
 
-      const hitX = afterBall.x, hitY = afterBall.y;
+      if ( 0.1 < hit.time && hit.time <= dt ) {
+        lastWall = hit.segment;
+        
+        afterBall.update( hit.time );
+        dt -= hit.time;
 
-      ctx.beginPath();
-      ctx.moveTo( ball.x, ball.y );
-      ctx.lineTo( hitX, hitY );
-      ctx.strokeStyle = 'green';
-      ctx.stroke();
+        afterBall.fillStyle = 'red';
+        afterBall.draw( ctx );
 
-      // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
-      const vDotN = ball.dx * hit.normalX + ball.dy * hit.normalY
-      const uX = vDotN * hit.normalX;
-      const uY = vDotN * hit.normalY;
-      const wX = ball.dx - uX;
-      const wY = ball.dy - uY;
+        // const hitX = afterBall.x, hitY = afterBall.y;
 
-      afterBall.dx = wX - uX;
-      afterBall.dy = wY - uY;
+        // ctx.beginPath();
+        // ctx.moveTo( ball.x, ball.y );
+        // ctx.lineTo( hitX, hitY );
+        // ctx.strokeStyle = 'green';
+        // ctx.stroke();
 
-      afterBall.update( dt - hit.time );
+        afterBall.bounceFrom( hit );
+      }
 
-      ctx.beginPath();
-      ctx.moveTo( hitX, hitY );
-      ctx.lineTo( game.mouseX, game.mouseY );
-      ctx.strokeStyle = 'blue';
-      ctx.stroke();
+      //   afterBall.update( dt - hit.time );
 
-      afterBall.fillStyle = 'orange';
-      afterBall.draw( ctx );
+      //   ctx.beginPath();
+      //   ctx.moveTo( hitX, hitY );
+      //   ctx.lineTo( game.mouseX, game.mouseY );
+      //   ctx.strokeStyle = 'blue';
+      //   ctx.stroke();
 
-      ctx.beginPath();
-      ctx.moveTo( hitX, hitY );
-      ctx.lineTo( afterBall.x, afterBall.y );
-      ctx.strokeStyle = 'orange';
-      ctx.stroke();
-    }
-    else {
-      afterBall.update( dt );
-      afterBall.fillStyle = 'orange';
-      afterBall.draw( ctx );
+      //   afterBall.fillStyle = 'orange';
+      //   afterBall.draw( ctx );
+
+      //   ctx.beginPath();
+      //   ctx.moveTo( hitX, hitY );
+      //   ctx.lineTo( afterBall.x, afterBall.y );
+      //   ctx.strokeStyle = 'orange';
+      //   ctx.stroke();
+      // }
+      else {
+        afterBall.update( dt );
+        dt = 0;
+
+        afterBall.fillStyle = 'orange';
+        afterBall.draw( ctx );
+      }
     }
     
   };

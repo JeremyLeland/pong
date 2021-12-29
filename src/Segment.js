@@ -32,6 +32,7 @@ export class Segment {
         time: hitTime,
         normalX: this.normalX,
         normalY: this.normalY,
+        segment: this,
       };
     }
 
@@ -91,6 +92,7 @@ function getPointHit( entity, cx, cy ) {
       time: hitTime,
       normalX: nx,
       normalY: ny,
+      segment: this,
     }
   }
   else {
