@@ -66,40 +66,40 @@
       afterBall.fillStyle = 'red';
       afterBall.draw( ctx );
 
-      // const hitX = afterBall.x, hitY = afterBall.y;
+      const hitX = afterBall.x, hitY = afterBall.y;
 
-      // ctx.beginPath();
-      // ctx.moveTo( ball.x, ball.y );
-      // ctx.lineTo( hitX, hitY );
-      // ctx.strokeStyle = 'green';
-      // ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo( ball.x, ball.y );
+      ctx.lineTo( hitX, hitY );
+      ctx.strokeStyle = 'green';
+      ctx.stroke();
 
-      // // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
-      // const vDotN = ball.dx * hit.normalX + ball.dy * hit.normalY
-      // const uX = vDotN * hit.normalX;
-      // const uY = vDotN * hit.normalY;
-      // const wX = ball.dx - uX;
-      // const wY = ball.dy - uY;
+      // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+      const vDotN = ball.dx * hit.normalX + ball.dy * hit.normalY
+      const uX = vDotN * hit.normalX;
+      const uY = vDotN * hit.normalY;
+      const wX = ball.dx - uX;
+      const wY = ball.dy - uY;
 
-      // afterBall.dx = wX - uX;
-      // afterBall.dy = wY - uY;
+      afterBall.dx = wX - uX;
+      afterBall.dy = wY - uY;
 
-      // afterBall.update( dt - hit.time );
+      afterBall.update( dt - hit.time );
 
-      // ctx.beginPath();
-      // ctx.moveTo( hitX, hitY );
-      // ctx.lineTo( game.mouseX, game.mouseY );
-      // ctx.strokeStyle = 'blue';
-      // ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo( hitX, hitY );
+      ctx.lineTo( game.mouseX, game.mouseY );
+      ctx.strokeStyle = 'blue';
+      ctx.stroke();
 
-      // afterBall.fillStyle = 'orange';
-      // afterBall.draw( ctx );
+      afterBall.fillStyle = 'orange';
+      afterBall.draw( ctx );
 
-      // ctx.beginPath();
-      // ctx.moveTo( hitX, hitY );
-      // ctx.lineTo( afterBall.x, afterBall.y );
-      // ctx.strokeStyle = 'orange';
-      // ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo( hitX, hitY );
+      ctx.lineTo( afterBall.x, afterBall.y );
+      ctx.strokeStyle = 'orange';
+      ctx.stroke();
     }
     else {
       afterBall.update( dt );
