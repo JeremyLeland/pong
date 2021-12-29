@@ -67,7 +67,6 @@
     let lastWall;
 
     while ( dt > 0 ) {
-      // TODO: Ignore whatever wall we hit last, so we don't need to account for error below?
       const hit = walls.filter( w => w != lastWall ).map( 
         wall => wall.getCollision( afterBall )
       ).reduce( 
@@ -75,7 +74,7 @@
         { time: Infinity, normalX: 0, normalY: 0 }
       );
 
-      if ( 0.1 < hit.time && hit.time <= dt ) {
+      if ( 0 < hit.time && hit.time <= dt ) {
         lastWall = hit.segment;
         
         afterBall.update( hit.time );
@@ -84,34 +83,8 @@
         afterBall.fillStyle = 'red';
         afterBall.draw( ctx );
 
-        // const hitX = afterBall.x, hitY = afterBall.y;
-
-        // ctx.beginPath();
-        // ctx.moveTo( ball.x, ball.y );
-        // ctx.lineTo( hitX, hitY );
-        // ctx.strokeStyle = 'green';
-        // ctx.stroke();
-
         afterBall.bounceFrom( hit );
       }
-
-      //   afterBall.update( dt - hit.time );
-
-      //   ctx.beginPath();
-      //   ctx.moveTo( hitX, hitY );
-      //   ctx.lineTo( game.mouseX, game.mouseY );
-      //   ctx.strokeStyle = 'blue';
-      //   ctx.stroke();
-
-      //   afterBall.fillStyle = 'orange';
-      //   afterBall.draw( ctx );
-
-      //   ctx.beginPath();
-      //   ctx.moveTo( hitX, hitY );
-      //   ctx.lineTo( afterBall.x, afterBall.y );
-      //   ctx.strokeStyle = 'orange';
-      //   ctx.stroke();
-      // }
       else {
         afterBall.update( dt );
         dt = 0;
