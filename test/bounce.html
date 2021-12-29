@@ -5,42 +5,15 @@
 
 <script type="module">
 
-  import { Game } from '../src/game.js';
-  import { Entity } from '../src/entity.js';
-  import { Segment } from '../src/segment.js';
+  import { Game } from '../src/Game.js';
+  import { Ball } from '../src/Pong.js';
+  import { Segment } from '../src/Segment.js';
 
   const walls = [
     new Segment(  50, 150, 100, 100 ),
     new Segment( 100, 100, 200, 150 ),
     new Segment( 200, 150, 400, 100 ),
   ];
-
-  class Ball extends Entity {
-    width = 10;
-    height = 10;
-    radius = 10;
-    path = new Path2D( 'M -1 0 A 1 1 0 0 1 1 0 A 1 1 0 0 1 -1 0' );
-
-    dx = 0;
-    dy = 0;
-
-    update( dt ) {
-      this.x += this.dx * dt;
-      this.y += this.dy * dt;
-    }
-
-    bounceFrom( hit ) {
-      // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
-      const vDotN = this.dx * hit.normalX + this.dy * hit.normalY;
-      const uX = vDotN * hit.normalX;
-      const uY = vDotN * hit.normalY;
-      const wX = this.dx - uX;
-      const wY = this.dy - uY;
-
-      this.dx = wX - uX;
-      this.dy = wY - uY;
-    }
-  }
 
   const ball = new Ball( { x: 120, y: 50, fillStyle: 'yellow' } );
 

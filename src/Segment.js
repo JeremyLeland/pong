@@ -5,9 +5,6 @@ export class Segment {
     this.x2 = x2;
     this.y2 = y2;
 
-    this.midX = ( x1 + x2 ) / 2;
-    this.midY = ( y1 + y2 ) / 2;
-
     this.length = Math.hypot( x2 - x1, y2 - y1 );
     this.normalX = ( y2 - y1 ) / this.length;
     this.normalY = ( x1 - x2 ) / this.length;
@@ -50,8 +47,10 @@ export class Segment {
     ctx.moveTo( this.x1, this.y1 );
     ctx.lineTo( this.x2, this.y2 );
 
-    ctx.moveTo( this.midX, this.midY );
-    ctx.lineTo( this.midX + this.normalX * 10, this.midY + this.normalY * 10 );
+    const midX = ( this.x1 + this.x2 ) / 2;
+    const midY = ( this.y1 + this.y2 ) / 2;
+    ctx.moveTo( midX, midY );
+    ctx.lineTo( midX + this.normalX * 10, midY + this.normalY * 10 );
 
     ctx.strokeStyle = 'white';
     ctx.stroke();
