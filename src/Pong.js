@@ -70,7 +70,32 @@ export class Level {
 
   update( dt ) {
     this.paddles.forEach( p => p.update( dt ) );
-    this.balls.forEach( b => b.update( dt ) );
+    this.balls.forEach( ball => {
+      let lastWall;
+
+      while ( dt > 0 ) {
+        const hit = this.walls.filter( w => w != lastWall ).map( 
+          wall => wall.getCollision( ball )
+        ).reduce( 
+          ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
+          { time: Infinity }
+        );
+  
+        if ( 0 < hit.time && hit.time <= dt ) {
+          lastWall = hit.segment;
+          
+          ball.update( hit.time );
+          dt -= hit.time;
+  
+          ball.bounceFrom( hit );
+        }
+        else {
+          ball.update( dt );
+          dt = 0;
+        }
+      }
+
+    } );
   }
 
   draw( ctx ) {

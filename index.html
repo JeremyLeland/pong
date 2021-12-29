@@ -13,7 +13,7 @@
   level.addWallsFromPoints( [ [ 150, 250 ], [ 250, 100 ], [ 350, 250 ], [ 250, 400 ] ] );
   level.addWallsFromPoints( [ [ 10, 500 ], [ 500, 500 ], [ 500, 10 ], [ 10, 10 ] ] );
 
-  level.balls.push( new Ball( { x: 100, y: 100, dx: 0.1, dy: 0.1, fillStyle: 'yellow' } ) );
+  level.balls.push( new Ball( { x: 100, y: 100, dx: 0.2, dy: 0.2, fillStyle: 'yellow' } ) );
   
   const player = new Paddle( { x: 300, y: 200, angle:  Math.PI / 4, fillStyle: 'red' } );
   const enemy  = new Paddle( { x: 300, y: 200, angle: -Math.PI / 4, fillStyle: 'aqua' } );
