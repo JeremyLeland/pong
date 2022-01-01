@@ -9,29 +9,50 @@
   import { Segment } from './src/Segment.js';
   import { Paddle, Wall, Ball, Level } from './src/Pong.js';
 
+  
 
   const level = new Level();
-  level.addWallsFromPoints( [ [ 150, 250 ], [ 250, 200 ], [ 350, 250 ], [ 250, 300 ] ] );
-  level.addWallsFromPoints( [ [ 10, 500 ], [ 500, 500 ], [ 500, 10 ], [ 10, 10 ] ] );
+  level.addWallsFromPoints( getPoints( 10, 300, false ) );
 
   level.balls.push( new Ball( { x: 100, y: 100, dx: 0.2, dy: 0.2, fillStyle: 'yellow' } ) );
   
   // TODO: Human controlled players
-  level.paddles = [
-    new Paddle( new Segment( 10, 10, 10, 500 ), 'red' ),
-    new Paddle( new Segment( 500, 10, 500, 500 ), 'aqua' ),
-    new Paddle( new Segment( 10, 10, 500, 10 ), 'orange' ),
-    new Paddle( new Segment( 10, 500, 500, 500 ), 'lime' ),
-  ];
+  for ( let i = 0; i < 5; i ++ ) {
+    level.paddles.push( new Paddle( level.walls[ i * 2 ], randCol() ) );
+  }
 
+  level.addWallsFromPoints( getPoints( 6, 100, true ) );
+  
   const game = new Game();
   game.update = ( dt ) => {
     level.update( dt );
   };
 
   game.draw = ( ctx ) => {
+    ctx.save();
+
+    ctx.translate( window.innerWidth / 2, window.innerHeight / 2 );
+
     level.draw( ctx );
+
+    ctx.restore();
   };
+
+  function getPoints( numPoints, radius = 1, clockwise = true ) {
+    const spacing = ( clockwise ? 1 : -1 ) * Math.PI * 2 / numPoints;
+    const angles = Array.from( Array( numPoints ), ( _, ndx ) => 
+      spacing * ( ndx + randMid() * 0.5 ) 
+    );
+    return angles.map( angle => 
+      [ Math.cos( angle ), Math.sin( angle ) ].map( e => 
+        radius * ( e + randMid() * 0.2 )
+      )
+    );
+  }
+
+  function randMid() { return Math.random() - 0.5; }
+
+  function randCol() { return `hsl( ${ Math.random() * 360 }, 100%, 50% )`; }
 
 </script>
 
