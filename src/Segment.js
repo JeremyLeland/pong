@@ -1,5 +1,9 @@
 export class Segment {
   constructor( x1, y1, x2, y2 ) {
+    this.setPoints( x1, y1, x2, y2 );
+  }
+
+  setPoints( x1, y1, x2, y2 ) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -11,7 +15,6 @@ export class Segment {
   }
 
   getCollision( entity ) {
-
     const distFromLine = ( this.x1 - entity.x ) * this.normalX + ( this.y1 - entity.y ) * this.normalY;
 
     const vDotN = entity.dx * this.normalX + entity.dy * this.normalY;

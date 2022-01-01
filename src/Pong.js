@@ -3,10 +3,46 @@ import { Segment } from './Segment.js';
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
+const PADDLE_SPEED = 0.1;
+
 export class Paddle extends Entity {
-  width = 50;
-  height = 5;
-  path = rectPath;
+  #startX;
+  #startY;
+  #offset;
+  #maxOffset;
+
+  constructor( rail, fillStyle ) {
+    super( {
+      x: ( rail.x1 + rail.x2 ) / 2,
+      y: ( rail.y1 + rail.y2 ) / 2,
+      angle: Math.atan2( rail.y2 - rail.y1, rail.x2 - rail.x1 ),
+      width: 50,
+      height: 5,
+      fillStyle: fillStyle,
+      path: rectPath,
+    } );
+
+    this.#startX = this.x;
+    this.#startY = this.y;
+    this.#offset = 0;
+    this.#maxOffset = rail.length / 2 - this.width;
+
+  }
+
+  respawn() {
+    this.x = this.#startX;
+    this.y = this.#startY;
+    this.#offset = 0;
+  }
+
+  update( dt ) {
+    this.#offset = Math.max( -this.#maxOffset, Math.min( this.#maxOffset, 
+      this.#offset + PADDLE_SPEED * dt
+    ) );
+
+    this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
+    this.y = this.#startY + Math.sin( this.angle ) * this.#offset;
+  }
 }
 
 export class Wall extends Entity {
