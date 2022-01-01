@@ -3,7 +3,7 @@ import { Segment } from './Segment.js';
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
-const PADDLE_SPEED = 0.1;
+const PADDLE_SPEED = 0.2;
 
 export class Paddle extends Entity {
   #startX;
@@ -38,11 +38,16 @@ export class Paddle extends Entity {
   update( dt, level ) {
     const closestBall = level.balls[ 0 ];
 
-    const moveDir = ( closestBall.x - this.x ) * Math.cos( this.angle ) + ( closestBall.y - this.y ) * Math.sin( this.angle );
+    const goalDist = 
+      ( closestBall.x - this.x ) * Math.cos( this.angle ) + 
+      ( closestBall.y - this.y ) * Math.sin( this.angle );
 
+    const moveDist = goalDist < 0 ? 
+      Math.max( -PADDLE_SPEED * dt, goalDist ) : 
+      Math.min(  PADDLE_SPEED * dt, goalDist );
 
     this.#offset = Math.max( -this.#maxOffset, Math.min( this.#maxOffset, 
-      this.#offset + moveDir * ( PADDLE_SPEED * dt )
+      this.#offset + moveDist
     ) );
 
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
