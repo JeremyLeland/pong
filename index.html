@@ -9,19 +9,32 @@
   import { Segment } from './src/Segment.js';
   import { Paddle, Wall, Ball, Level } from './src/Pong.js';
 
+  const NUM_PLAYERS = 4;
   
 
   const level = new Level();
-  level.addWallsFromPoints( getPoints( 10, 300, false ) );
+  level.addWallsFromPoints( getPoints( { 
+    numPoints: NUM_PLAYERS * 2, width: 400, height: 300, clockwise: false, perterb: 100 
+  } ) );
 
-  level.balls.push( new Ball( { x: 100, y: 100, dx: 0.2, dy: 0.2, fillStyle: 'yellow' } ) );
+  level.balls.push( new Ball( { x: 0, y: 0, dx: 0.3, dy: 0, fillStyle: 'yellow' } ) );
   
   // TODO: Human controlled players
-  for ( let i = 0; i < 5; i ++ ) {
-    level.paddles.push( new Paddle( level.walls[ i * 2 ], randCol() ) );
+  for ( let i = 0; i < NUM_PLAYERS; i ++ ) {
+    level.paddles.push( 
+      new Paddle( 
+        level.walls[ i * 2 ], 
+        `hsl( ${ i * 360 / NUM_PLAYERS }, 100%, 50% )`
+      )
+    );
   }
 
-  level.addWallsFromPoints( getPoints( 6, 100, true ) );
+  level.addWallsFromPoints( getPoints( {
+    cx: -100, cy: -100, numPoints: 6, width: 50, height: 50, clockwise: true, perterb: 10 
+  } ) );
+  level.addWallsFromPoints( getPoints( {
+    cx: 100, cy: 100, numPoints: 6, width: 70, height: 70, clockwise: true, perterb: 20 
+  } ) );
   
   const game = new Game();
   game.update = ( dt ) => {
@@ -38,21 +51,21 @@
     ctx.restore();
   };
 
-  function getPoints( numPoints, radius = 1, clockwise = true ) {
+  function getPoints( { cx = 0, cy = 0, width = 1, height = 1, numPoints = 10, clockwise = true, perterb = 0.2 } ) {
     const spacing = ( clockwise ? 1 : -1 ) * Math.PI * 2 / numPoints;
     const angles = Array.from( Array( numPoints ), ( _, ndx ) => 
       spacing * ( ndx + randMid() * 0.5 ) 
     );
     return angles.map( angle => 
-      [ Math.cos( angle ), Math.sin( angle ) ].map( e => 
-        radius * ( e + randMid() * 0.2 )
+      [ cx + width * Math.cos( angle ), cy + height * Math.sin( angle ) ].map( e => 
+        e + randMid() * perterb
       )
     );
   }
 
   function randMid() { return Math.random() - 0.5; }
 
-  function randCol() { return `hsl( ${ Math.random() * 360 }, 100%, 50% )`; }
+  function randCol() { return ; }
 
 </script>
 
