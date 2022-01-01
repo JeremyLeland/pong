@@ -17,7 +17,7 @@
     numPoints: NUM_PLAYERS * 2, width: 400, height: 300, clockwise: false, perterb: 100 
   } ) );
 
-  level.balls.push( new Ball( { x: 0, y: 0, dx: 0.3, dy: 0, fillStyle: 'yellow' } ) );
+  level.balls.push( new Ball( { x: 0, y: 0, fillStyle: 'yellow' } ) );
   
   // TODO: Human controlled players
   for ( let i = 0; i < NUM_PLAYERS; i ++ ) {
@@ -64,8 +64,6 @@
   }
 
   function randMid() { return Math.random() - 0.5; }
-
-  function randCol() { return ; }
 
 </script>
 

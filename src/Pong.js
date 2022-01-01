@@ -6,6 +6,8 @@ const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 const PADDLE_SPEED = 0.2;
 
 export class Paddle extends Entity {
+  segment;
+
   #startX;
   #startY;
   #offset;
@@ -22,11 +24,19 @@ export class Paddle extends Entity {
       path: rectPath,
     } );
 
+    this.segment = new Segment( 
+      this.x - Math.cos( this.angle ) * this.width, 
+      this.y - Math.sin( this.angle ) * this.width, 
+      this.x + Math.cos( this.angle ) * this.width,
+      this.y + Math.sin( this.angle ) * this.width
+    );
+
     this.#startX = this.x;
     this.#startY = this.y;
     this.#offset = 0;
     this.#maxOffset = rail.length / 2 - this.width;
 
+    rail.owner = this;
   }
 
   respawn() {
@@ -52,6 +62,13 @@ export class Paddle extends Entity {
 
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
     this.y = this.#startY + Math.sin( this.angle ) * this.#offset;
+
+    this.segment.setPoints( 
+      this.x - Math.cos( this.angle ) * this.width, 
+      this.y - Math.sin( this.angle ) * this.width, 
+      this.x + Math.cos( this.angle ) * this.width,
+      this.y + Math.sin( this.angle ) * this.width
+    );
   }
 }
 
@@ -77,9 +94,15 @@ export class Ball extends Entity {
 
   dx = 0;
   dy = 0;
+  speed = 0.3;
 
   constructor( info ) {
     super( info );
+
+    const angle = Math.random() * Math.PI * 2;
+    this.dx = Math.cos( angle ) * this.speed;
+    this.dy = Math.sin( angle ) * this.speed;
+
     Object.assign( this, info );
   }
 
@@ -116,11 +139,14 @@ export class Level {
 
   update( dt ) {
     this.paddles.forEach( p => p.update( dt, this ) );
+    
+    const segments = this.walls.concat( this.paddles.map( p => p.segment ) );
+    
     this.balls.forEach( ball => {
       let lastWall;
 
       while ( dt > 0 ) {
-        const hit = this.walls.filter( w => w != lastWall ).map( 
+        const hit = segments.filter( w => w != lastWall && !w.owner ).map( 
           wall => wall.getCollision( ball )
         ).reduce( 
           ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,

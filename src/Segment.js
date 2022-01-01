@@ -3,7 +3,7 @@ export class Segment {
     this.setPoints( x1, y1, x2, y2 );
   }
 
-  setPoints( x1, y1, x2, y2 ) {
+  setPoints( x1 = 0, y1 = 0, x2 = 0, y2 = 0 ) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
@@ -58,6 +58,41 @@ export class Segment {
     ctx.strokeStyle = 'white';
     ctx.stroke();
   }
+}
+
+// TODO: Use something like this instead of dedicated Segment classes? 
+// Might work better for dynamic objects with bounding segments
+function getLineHit( entity, x1, y1, x2, y2 ) {
+  const length = Math.hypot( x2 - x1, y2 - y1 );
+  const normalX = ( y2 - y1 ) / length;
+  const normalY = ( x1 - x2 ) / length;
+
+  const distFromLine = ( x1 - entity.x ) * normalX + ( y1 - entity.y ) * normalY;
+
+  const vDotN = entity.dx * normalX + entity.dy * normalY;
+  const hitTime = ( distFromLine + entity.radius ) / vDotN;
+
+  const hitX = entity.x + entity.dx * hitTime;
+  const hitY = entity.y + entity.dy * hitTime;
+
+  const d1 = Math.hypot( x1 - hitX, y1 - hitY );
+  const d2 = Math.hypot( x2 - hitX, y2 - hitY );
+      
+  // Inside segment
+  if ( d1 < length && d2 < length ) {
+    return {
+      time: hitTime,
+      normalX: normalX,
+      normalY: normalY,
+      segment: this,      // need to figure out how this works without at Segment object
+    };
+  }
+
+  // End points. If these miss, they will return time: Infinity
+  const hit1 = getPointHit( entity, x1, y1 );
+  const hit2 = getPointHit( entity, x2, y2 );
+
+  return hit1.time < hit2.time ? hit1 : hit2;
 }
 
 function getPointHit( entity, cx, cy ) {
