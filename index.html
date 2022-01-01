@@ -16,9 +16,13 @@
 
   level.balls.push( new Ball( { x: 100, y: 100, dx: 0.2, dy: 0.2, fillStyle: 'yellow' } ) );
   
-  const player = new Paddle( new Segment( 10, 10, 10, 500 ), 'red' );
-  const enemy  = new Paddle( new Segment( 500, 10, 500, 500 ), 'aqua' );
-  level.paddles.push( player, enemy );
+  // TODO: Human controlled players
+  level.paddles = [
+    new Paddle( new Segment( 10, 10, 10, 500 ), 'red' ),
+    new Paddle( new Segment( 500, 10, 500, 500 ), 'aqua' ),
+    new Paddle( new Segment( 10, 10, 500, 10 ), 'orange' ),
+    new Paddle( new Segment( 10, 500, 500, 500 ), 'lime' ),
+  ];
 
   const game = new Game();
   game.update = ( dt ) => {

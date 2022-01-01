@@ -35,9 +35,14 @@ export class Paddle extends Entity {
     this.#offset = 0;
   }
 
-  update( dt ) {
+  update( dt, level ) {
+    const closestBall = level.balls[ 0 ];
+
+    const moveDir = ( closestBall.x - this.x ) * Math.cos( this.angle ) + ( closestBall.y - this.y ) * Math.sin( this.angle );
+
+
     this.#offset = Math.max( -this.#maxOffset, Math.min( this.#maxOffset, 
-      this.#offset + PADDLE_SPEED * dt
+      this.#offset + moveDir * ( PADDLE_SPEED * dt )
     ) );
 
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
@@ -105,7 +110,7 @@ export class Level {
   }
 
   update( dt ) {
-    this.paddles.forEach( p => p.update( dt ) );
+    this.paddles.forEach( p => p.update( dt, this ) );
     this.balls.forEach( ball => {
       let lastWall;
 
