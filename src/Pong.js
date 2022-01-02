@@ -1,6 +1,11 @@
 import { Entity } from './Entity.js';
 import { Segment } from './Segment.js';
 
+const scoreDiv = document.createElement( 'div' );
+document.body.appendChild( scoreDiv );
+
+scoreDiv.innerText = 0;
+
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
 const PADDLE_SPEED = 0.1;
@@ -24,12 +29,7 @@ export class Paddle extends Entity {
       path: rectPath,
     } );
 
-    this.segment = new Segment( 
-      this.x - Math.cos( this.angle ) * this.width, 
-      this.y - Math.sin( this.angle ) * this.width, 
-      this.x + Math.cos( this.angle ) * this.width,
-      this.y + Math.sin( this.angle ) * this.width
-    );
+    this.segment = new Segment( 0, 0, 1, 1 );
 
     this.#startX = this.x;
     this.#startY = this.y;
@@ -63,12 +63,20 @@ export class Paddle extends Entity {
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
     this.y = this.#startY + Math.sin( this.angle ) * this.#offset;
 
+    const cosW = Math.cos( this.angle ), sinW = Math.sin( this.angle );
+    const cosH = Math.cos( this.angle + Math.PI / 2 );
+    const sinH = Math.sin( this.angle + Math.PI / 2 );
     this.segment.setPoints( 
-      this.x - Math.cos( this.angle ) * this.width, 
-      this.y - Math.sin( this.angle ) * this.width, 
-      this.x + Math.cos( this.angle ) * this.width,
-      this.y + Math.sin( this.angle ) * this.width
+      this.x - cosW * this.width - cosH * this.height, 
+      this.y - sinW * this.width - sinH * this.height, 
+      this.x + cosW * this.width - cosH * this.height,
+      this.y + sinW * this.width - sinH * this.height,
     );
+  }
+
+  draw( ctx ) {
+    super.draw( ctx );
+    this.segment.draw( ctx );
   }
 }
 
@@ -166,6 +174,7 @@ export class Level {
   
           if ( hit.segment.owner ) {
             setTimeout( () => ball.respawn(), 1000 );
+            scoreDiv.innerText ++;
           }
           else {
             ball.bounceFrom( hit );
