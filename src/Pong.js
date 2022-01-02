@@ -3,7 +3,7 @@ import { Segment } from './Segment.js';
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
-const PADDLE_SPEED = 0.2;
+const PADDLE_SPEED = 0.1;
 
 export class Paddle extends Entity {
   segment;
@@ -94,16 +94,21 @@ export class Ball extends Entity {
 
   dx = 0;
   dy = 0;
-  speed = 0.3;
+  speed = 0.4;
 
   constructor( info ) {
     super( info );
+    this.respawn();
+    Object.assign( this, info );
+  }
+
+  respawn() {
+    this.x = 0;
+    this.y = 0;
 
     const angle = Math.random() * Math.PI * 2;
     this.dx = Math.cos( angle ) * this.speed;
     this.dy = Math.sin( angle ) * this.speed;
-
-    Object.assign( this, info );
   }
 
   update( dt ) {
@@ -146,7 +151,7 @@ export class Level {
       let lastWall;
 
       while ( dt > 0 ) {
-        const hit = segments.filter( w => w != lastWall && !w.owner ).map( 
+        const hit = segments.filter( w => w != lastWall ).map( 
           wall => wall.getCollision( ball )
         ).reduce( 
           ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
@@ -159,7 +164,12 @@ export class Level {
           ball.update( hit.time );
           dt -= hit.time;
   
-          ball.bounceFrom( hit );
+          if ( hit.segment.owner ) {
+            setTimeout( () => ball.respawn(), 1000 );
+          }
+          else {
+            ball.bounceFrom( hit );
+          }
         }
         else {
           ball.update( dt );

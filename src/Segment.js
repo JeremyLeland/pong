@@ -39,6 +39,8 @@ export class Segment {
     // End points. If these miss, they will return time: Infinity
     const hit1 = getPointHit( entity, this.x1, this.y1 );
     const hit2 = getPointHit( entity, this.x2, this.y2 );
+    hit1.segment = this;
+    hit2.segment = this;
 
     return hit1.time < hit2.time ? hit1 : hit2;
   }
@@ -91,6 +93,8 @@ function getLineHit( entity, x1, y1, x2, y2 ) {
   // End points. If these miss, they will return time: Infinity
   const hit1 = getPointHit( entity, x1, y1 );
   const hit2 = getPointHit( entity, x2, y2 );
+  hit1.segment = this;
+  hit2.segment = this;
 
   return hit1.time < hit2.time ? hit1 : hit2;
 }
