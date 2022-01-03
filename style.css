@@ -12,6 +12,15 @@ body {
   justify-content: center;
 }
 
-div {
+.scores {
   position: absolute;
+  font-family: sans-serif;
+}
+
+.scoreLabel {
+  font-weight: bold;
+}
+
+.scoreValue {
+  padding-right: 10px;
 }

@@ -1,10 +1,13 @@
 import { Entity } from './Entity.js';
 import { Segment } from './Segment.js';
 
-const scoreDiv = document.createElement( 'div' );
-document.body.appendChild( scoreDiv );
+const scoreDivs = new Map();
 
-scoreDiv.innerText = 0;
+const ui = document.createElement( 'div' );
+ui.className = 'scores';
+document.body.appendChild( ui );
+
+let playerIndex = 0;
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
@@ -35,6 +38,17 @@ export class Paddle extends Entity {
     this.#startY = this.y;
     this.#offset = 0;
     this.#maxOffset = rail.length / 2 - this.width;
+
+    const label = document.createElement( 'span' );
+    label.className = 'scoreLabel';
+    label.style.color = this.fillStyle;
+    label.innerText = `Player ${ ++playerIndex }: `;
+    ui.appendChild( label );
+
+    this.scoreUI = document.createElement( 'span' );
+    this.scoreUI.className = 'scoreValue';
+    this.scoreUI.innerText = 0;
+    ui.appendChild( this.scoreUI );
 
     rail.owner = this;
   }
@@ -174,7 +188,7 @@ export class Level {
   
           if ( hit.segment.owner ) {
             setTimeout( () => ball.respawn(), 1000 );
-            scoreDiv.innerText ++;
+            hit.segment.owner.scoreUI.innerText --;
           }
           else {
             ball.bounceFrom( hit );
