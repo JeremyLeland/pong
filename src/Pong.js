@@ -90,7 +90,7 @@ export class Paddle extends Entity {
 
   draw( ctx ) {
     super.draw( ctx );
-    this.segment.draw( ctx );
+    //this.segment.draw( ctx );
   }
 }
 
@@ -105,6 +105,8 @@ export class Wall extends Entity {
       fillStyle: 'white',
       path: rectPath, 
     } );
+
+    this.segment = new Segment( x1, y1, x2, y2 );
   }
 }
 
@@ -160,14 +162,14 @@ export class Level {
     for ( let i = 0; i < points.length; i ++ ) {
       const a = points[ i ];
       const b = points[ ( i + 1 ) % points.length ];
-      this.walls.push( new Segment( a[ 0 ], a[ 1 ], b[ 0 ], b[ 1 ] ) );
+      this.walls.push( new Wall( a[ 0 ], a[ 1 ], b[ 0 ], b[ 1 ] ) );
     }
   }
 
   update( dt ) {
     this.paddles.forEach( p => p.update( dt, this ) );
     
-    const segments = this.walls.concat( this.paddles.map( p => p.segment ) );
+    const segments = [ ...this.walls.map( w => w.segment ), ...this.paddles.map( p => p.segment ) ];
     
     this.balls.forEach( ball => {
       let lastWall;

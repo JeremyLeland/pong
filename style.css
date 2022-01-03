@@ -15,6 +15,7 @@ body {
 .scores {
   position: absolute;
   font-family: sans-serif;
+  padding: 2px;
 }
 
 .scoreLabel {

@@ -14,19 +14,21 @@
 
   const level = new Level();
   level.addWallsFromPoints( getPoints( { 
-    numPoints: NUM_PLAYERS * 2, width: 400, height: 300, clockwise: false, perterb: 100 
+    numPoints: NUM_PLAYERS * 2, width: window.innerWidth * 0.4, height: window.innerHeight * 0.4, clockwise: false, perterb: 100 
   } ) );
 
   level.balls.push( new Ball( { x: 0, y: 0, fillStyle: 'yellow' } ) );
   
   // TODO: Human controlled players
   for ( let i = 0; i < NUM_PLAYERS; i ++ ) {
+    const wall = level.walls[ i * 2 ];
     level.paddles.push( 
       new Paddle( 
-        level.walls[ i * 2 ], 
+        wall.segment, 
         `hsl( ${ i * 360 / NUM_PLAYERS }, 100%, 50% )`
       )
     );
+    wall.fillStyle = 'dimgray';
   }
 
   level.addWallsFromPoints( getPoints( {
