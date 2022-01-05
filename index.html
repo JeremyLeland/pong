@@ -40,6 +40,14 @@
   
   const game = new Game();
   game.update = ( dt ) => {
+    level.paddles[ 0 ].mouseMove( game.mouseMovementX, game.mouseMovementY );
+    game.mouseMovementX = 0;
+    game.mouseMovementY = 0;
+
+    for ( let i = 1; i < level.paddles.length; i ++ ) {
+      level.paddles[ i ].think( level.balls );
+    }
+
     level.update( dt );
   };
 

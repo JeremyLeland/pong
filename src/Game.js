@@ -2,6 +2,8 @@ export class Game {
   mouseX = 0;
   mouseY = 0;
   mouseDown = false;
+  mouseMovementX = 0;
+  mouseMovementY = 0;
 
   constructor() {
     const canvas = document.createElement( 'canvas' );
@@ -18,6 +20,8 @@ export class Game {
       const event = e.touches ? e.touches[ 0 ] : e;
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
+      this.mouseMovementX = event.movementX;
+      this.mouseMovementY = event.movementY;
     }
     document.onmousemove = onInput;
     document.ontouchmove = onInput;

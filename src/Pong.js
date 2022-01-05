@@ -11,15 +11,17 @@ let playerIndex = 0;
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
-const PADDLE_SPEED = 0.1;
+const PADDLE_SPEED = 0.2;
+const MOUSE_SENSITIVITY = 2;
 
 export class Paddle extends Entity {
-  segment;
-
+  segment = new Segment( 0, 0, 1, 1 );
+  
   #startX;
   #startY;
   #offset;
   #maxOffset;
+  #goalMove = 0;
 
   constructor( rail, fillStyle ) {
     super( {
@@ -31,8 +33,6 @@ export class Paddle extends Entity {
       fillStyle: fillStyle,
       path: rectPath,
     } );
-
-    this.segment = new Segment( 0, 0, 1, 1 );
 
     this.#startX = this.x;
     this.#startY = this.y;
@@ -59,19 +59,26 @@ export class Paddle extends Entity {
     this.#offset = 0;
   }
 
-  update( dt, level ) {
-    const closestBall = level.balls[ 0 ];
+  mouseMove( x, y ) {
+    this.#goalMove = x * Math.cos( this.angle ) + y * Math.sin( this.angle );
+    this.#goalMove *= MOUSE_SENSITIVITY;
+  }
 
-    const goalDist = 
+  think( balls ) {
+    const closestBall = balls[ 0 ];   // TODO: Handle multiple balls
+
+    this.#goalMove = 
       ( closestBall.x - this.x ) * Math.cos( this.angle ) + 
       ( closestBall.y - this.y ) * Math.sin( this.angle );
+  }
 
-    const moveDist = goalDist < 0 ? 
-      Math.max( -PADDLE_SPEED * dt, goalDist ) : 
-      Math.min(  PADDLE_SPEED * dt, goalDist );
+  update( dt ) {
+    const move = this.#goalMove < 0 ? 
+      Math.max( -PADDLE_SPEED * dt, this.#goalMove ) : 
+      Math.min(  PADDLE_SPEED * dt, this.#goalMove );
 
     this.#offset = Math.max( -this.#maxOffset, Math.min( this.#maxOffset, 
-      this.#offset + moveDist
+      this.#offset + move
     ) );
 
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
@@ -167,7 +174,7 @@ export class Level {
   }
 
   update( dt ) {
-    this.paddles.forEach( p => p.update( dt, this ) );
+    this.paddles.forEach( p => p.update( dt ) );
     
     const segments = [ ...this.walls.map( w => w.segment ), ...this.paddles.map( p => p.segment ) ];
     
