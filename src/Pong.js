@@ -12,7 +12,6 @@ let playerIndex = 0;
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
 const PADDLE_SPEED = 0.2;
-const MOUSE_SENSITIVITY = 2;
 
 export class Paddle extends Entity {
   segment = new Segment( 0, 0, 1, 1 );
@@ -60,8 +59,7 @@ export class Paddle extends Entity {
   }
 
   mouseMove( x, y ) {
-    this.#goalMove = x * Math.cos( this.angle ) + y * Math.sin( this.angle );
-    this.#goalMove *= MOUSE_SENSITIVITY;
+    this.#goalMove += x * Math.cos( this.angle ) + y * Math.sin( this.angle );
   }
 
   think( balls ) {
@@ -80,6 +78,8 @@ export class Paddle extends Entity {
     this.#offset = Math.max( -this.#maxOffset, Math.min( this.#maxOffset, 
       this.#offset + move
     ) );
+
+    this.#goalMove -= move;
 
     this.x = this.#startX + Math.cos( this.angle ) * this.#offset;
     this.y = this.#startY + Math.sin( this.angle ) * this.#offset;
