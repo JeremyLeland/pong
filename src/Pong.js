@@ -11,7 +11,7 @@ let playerIndex = 0;
 
 const rectPath = new Path2D( 'M -1,-1 L 1,-1 L 1,1 L -1,1 Z' );
 
-const PADDLE_SPEED = 0.2;
+const PADDLE_SPEED = 0.3;
 
 export class Paddle extends Entity {
   segment = new Segment( 0, 0, 1, 1 );

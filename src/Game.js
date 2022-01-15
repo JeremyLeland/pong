@@ -29,18 +29,20 @@ export class Game {
       this.mouseMovementY = this.#lastY ? this.mouseY - this.#lastY : 0;
       this.#lastX = this.mouseX;
       this.#lastY = this.mouseY;
+
+      e.preventDefault();   // prevent scroll/zoom in iOS Safari
     }
     const stopInput = ( e ) => {
       this.mouseDown = false;
       this.#lastX = undefined;
       this.#lastY = undefined;
     }
-    document.onmousemove = onInput;
-    document.ontouchmove = onInput;
-    document.onmousedown  = onInput;
-    document.ontouchstart = onInput;
-    document.onmouseup  = stopInput;
-    document.ontouchend = stopInput;
+    document.addEventListener( 'mousemove',  onInput, { passive: false } );
+    document.addEventListener( 'touchmove',  onInput, { passive: false } );
+    document.addEventListener( 'mousedown',  onInput, { passive: false } );
+    document.addEventListener( 'touchstart', onInput, { passive: false } );
+    document.addEventListener( 'mouseup',  stopInput );
+    document.addEventListener( 'touchend', stopInput );
     
 
     let lastTime = null;
