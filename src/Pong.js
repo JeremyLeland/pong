@@ -61,11 +61,16 @@ export class Paddle extends Entity {
   }
 
   think( balls ) {
-    const closestBall = balls[ 0 ];   // TODO: Handle multiple balls
+    let closest = balls.map( 
+      ball => ( { ball: ball, dist: Math.hypot( ball.x - this.x, ball.y - this.y ) } )
+    ).reduce( 
+      ( closest, ballDist ) => ballDist.dist < closest.dist ? ballDist : closest,
+      { ball: null, dist: Infinity }
+    );
 
     this.#goalMove = 
-      ( closestBall.x - this.x ) * Math.cos( this.angle ) + 
-      ( closestBall.y - this.y ) * Math.sin( this.angle );
+      ( closest.ball.x - this.x ) * Math.cos( this.angle ) + 
+      ( closest.ball.y - this.y ) * Math.sin( this.angle );
   }
 
   update( dt ) {
@@ -140,9 +145,41 @@ export class Ball extends Entity {
     this.dy = Math.sin( angle ) * this.speed;
   }
 
-  update( dt ) {
+  updatePosition( dt ) {
     this.x += this.dx * dt;
     this.y += this.dy * dt;
+  }
+
+  update( dt, segments ) {
+    let lastWall;
+
+    while ( dt > 0 ) {
+      const hit = segments.filter( w => w != lastWall ).map( 
+        wall => wall.getCollision( this )
+      ).reduce( 
+        ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
+        { time: Infinity }
+      );
+
+      if ( 0 < hit.time && hit.time <= dt ) {
+        lastWall = hit.segment;
+        
+        this.updatePosition( hit.time );
+        dt -= hit.time;
+
+        if ( hit.segment.owner ) {
+          setTimeout( () => this.respawn(), 1000 );
+          hit.segment.owner.scoreUI.innerText --;
+        }
+        else {
+          this.bounceFrom( hit );
+        }
+      }
+      else {
+        this.updatePosition( dt );
+        dt = 0;
+      }
+    }
   }
 
   bounceFrom( hit ) {
@@ -176,38 +213,7 @@ export class Level {
     
     const segments = [ ...this.walls.map( w => w.segment ), ...this.paddles.map( p => p.segment ) ];
     
-    this.balls.forEach( ball => {
-      let lastWall;
-
-      while ( dt > 0 ) {
-        const hit = segments.filter( w => w != lastWall ).map( 
-          wall => wall.getCollision( ball )
-        ).reduce( 
-          ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
-          { time: Infinity }
-        );
-  
-        if ( 0 < hit.time && hit.time <= dt ) {
-          lastWall = hit.segment;
-          
-          ball.update( hit.time );
-          dt -= hit.time;
-  
-          if ( hit.segment.owner ) {
-            setTimeout( () => ball.respawn(), 1000 );
-            hit.segment.owner.scoreUI.innerText --;
-          }
-          else {
-            ball.bounceFrom( hit );
-          }
-        }
-        else {
-          ball.update( dt );
-          dt = 0;
-        }
-      }
-
-    } );
+    this.balls.forEach( ball => ball.update( dt, segments ) );
   }
 
   draw( ctx ) {

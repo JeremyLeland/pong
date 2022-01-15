@@ -26,8 +26,8 @@
 
   level.addWallsFromPoints( 
     octogon.map( e => [ 
-      e[ 0 ] * window.innerWidth / 2, 
-      e[ 1 ] * window.innerHeight / 2 
+      e[ 0 ] * window.innerWidth / 2.5, 
+      e[ 1 ] * window.innerHeight / 2.5 
     ] ) 
   );
   
@@ -37,6 +37,7 @@
   // } ) );
 
   level.balls.push( new Ball( { x: 0, y: 0, fillStyle: 'yellow' } ) );
+  level.balls.push( new Ball( { x: 50, y: 50, fillStyle: 'orange' } ) );
   
   for ( let i = 0; i < NUM_PLAYERS; i ++ ) {
     const wall = level.walls[ i * 2 ];
