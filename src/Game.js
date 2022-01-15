@@ -5,6 +5,9 @@ export class Game {
   mouseMovementX = 0;
   mouseMovementY = 0;
 
+  #lastX;
+  #lastY;
+
   constructor() {
     const canvas = document.createElement( 'canvas' );
     window.onresize = () => {
@@ -18,17 +21,26 @@ export class Game {
 
     const onInput = ( e ) => {
       const event = e.touches ? e.touches[ 0 ] : e;
+
+      this.mouseDown = true;
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
-      this.mouseMovementX = event.movementX;
-      this.mouseMovementY = event.movementY;
+      this.mouseMovementX = this.#lastX ? this.mouseX - this.#lastX : 0;
+      this.mouseMovementY = this.#lastY ? this.mouseY - this.#lastY : 0;
+      this.#lastX = this.mouseX;
+      this.#lastY = this.mouseY;
+    }
+    const stopInput = ( e ) => {
+      this.mouseDown = false;
+      this.#lastX = undefined;
+      this.#lastY = undefined;
     }
     document.onmousemove = onInput;
     document.ontouchmove = onInput;
-    document.onmousedown  = ( e ) => { this.mouseDown = true; onInput( e ); }
-    document.ontouchstart = ( e ) => { this.mouseDown = true; onInput( e ); }
-    document.onmouseup  = ( e ) => this.mouseDown = false;
-    document.ontouchend = ( e ) => this.mouseDown = false;
+    document.onmousedown  = onInput;
+    document.ontouchstart = onInput;
+    document.onmouseup  = stopInput;
+    document.ontouchend = stopInput;
     
 
     let lastTime = null;
