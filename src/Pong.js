@@ -1,8 +1,6 @@
 import { Entity } from './Entity.js';
 import { Segment } from './Segment.js';
 
-const scoreDivs = new Map();
-
 const ui = document.createElement( 'div' );
 ui.className = 'scores';
 document.body.appendChild( ui );
@@ -125,7 +123,7 @@ export class Ball extends Entity {
 
   dx = 0;
   dy = 0;
-  speed = 0.4;
+  speed = 0.5;
 
   constructor( info ) {
     super( info );

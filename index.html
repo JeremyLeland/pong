@@ -18,9 +18,23 @@
   
 
   const level = new Level();
-  level.addWallsFromPoints( getPoints( { 
-    numPoints: NUM_PLAYERS * 2, width: window.innerWidth * 0.4, height: window.innerHeight * 0.4, clockwise: false, perterb: 100 
-  } ) );
+
+  const octogon = [ 
+    [ -1.0,  0.25 ], [ -0.25,  1.0 ], [  0.25,  1.0 ], [  1.0,  0.25 ],
+    [  1.0, -0.25 ], [  0.25, -1.0 ], [ -0.25, -1.0 ], [ -1.0, -0.25 ],
+  ];
+
+  level.addWallsFromPoints( 
+    octogon.map( e => [ 
+      e[ 0 ] * window.innerWidth / 2, 
+      e[ 1 ] * window.innerHeight / 2 
+    ] ) 
+  );
+  
+
+  // level.addWallsFromPoints( getPoints( { 
+  //   numPoints: NUM_PLAYERS * 2, width: window.innerWidth * 0.4, height: window.innerHeight * 0.4, clockwise: false, perterb: 100 
+  // } ) );
 
   level.balls.push( new Ball( { x: 0, y: 0, fillStyle: 'yellow' } ) );
   
@@ -35,12 +49,14 @@
     wall.fillStyle = 'dimgray';
   }
 
-  level.addWallsFromPoints( getPoints( {
-    cx: -100, cy: -100, numPoints: 6, width: 50, height: 50, clockwise: true, perterb: 10 
-  } ) );
-  level.addWallsFromPoints( getPoints( {
-    cx: 100, cy: 100, numPoints: 6, width: 70, height: 70, clockwise: true, perterb: 20 
-  } ) );
+  // level.addWallsFromPoints( getPoints( {
+  //   cx: -100, cy: -100, numPoints: 6, width: 50, height: 50, clockwise: true, perterb: 10 
+  // } ) );
+  // level.addWallsFromPoints( getPoints( {
+  //   cx: 100, cy: 100, numPoints: 6, width: 70, height: 70, clockwise: true, perterb: 20 
+  // } ) );
+
+  
   
   const game = new Game();
   game.update = ( dt ) => {
