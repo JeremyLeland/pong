@@ -193,7 +193,7 @@ export class Level {
     // TODO: Move the step-by-step code back here.
     // Find the first collision out of all the possible collisions, 
     // run the simulation to that point, do the bounce, then go again
-    let lastWall;
+    let lastHit;
 
     for ( let tries = 0; dt > 0 && tries < 10; tries ++ ) {   // don't get stuck forever
       const hits = [];
@@ -201,7 +201,7 @@ export class Level {
       // TODO: Or use a list with filter, if it looks better?
       for ( let b = 0; b < this.balls.length; b ++ ) {
         const ball = this.balls[ b ];
-        this.walls.forEach( wall => hits.push( wall.getCollision( ball ) ) );
+        this.walls.filter( wall => !lastHit?.entities.includes( wall.segment ) ).forEach( wall => hits.push( wall.getCollision( ball ) ) );
         this.paddles.forEach( paddle => hits.push( paddle.getCollision( ball ) ) );
 
         for ( let o = b + 1; o < this.balls.length; o ++ ) {
@@ -216,7 +216,7 @@ export class Level {
       );
 
       if ( 0 < closestHit.time && closestHit.time <= dt ) {
-        // lastWall = closestHit.segment;
+        lastHit = closestHit;
         
         this.balls.forEach( b => b.update( closestHit.time ) );
         this.paddles.forEach( p => p.update( closestHit.time ) );
@@ -234,10 +234,6 @@ export class Level {
         this.balls.forEach( b => b.update( dt ) );
         this.paddles.forEach( p => p.update( dt ) );
         dt = 0;
-      }
-
-      if ( tries > 1 ) {
-        debugger;
       }
     }
   }
