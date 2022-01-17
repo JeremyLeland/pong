@@ -1,6 +1,7 @@
 export class Entity {
   x = 0;
   y = 0;
+  mass = 1;
   angle = 0;
   width = 1;
   height = 1;
@@ -76,17 +77,5 @@ export class Entity {
         time: Infinity
       }
     }
-  }
-
-  bounceFrom( hit ) {
-    // https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
-    const vDotN = this.dx * hit.normal.x + this.dy * hit.normal.y;
-    const uX = vDotN * hit.normal.x;
-    const uY = vDotN * hit.normal.y;
-    const wX = this.dx - uX;
-    const wY = this.dy - uY;
-
-    this.dx = wX - uX;
-    this.dy = wY - uY;
   }
 }

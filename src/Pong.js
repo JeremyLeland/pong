@@ -148,28 +148,7 @@ export class Ball extends Entity {
   update( dt ) {
     this.x += this.dx * dt;
     this.y += this.dy * dt;
-  }
-
-
-  /*
-  // See https://ericleong.me/research/circle-circle/#dynamic-circle-circle-collision
-    // someday: try something from this monster? http://www.euclideanspace.com/physics/dynamics/collision/twod/index.htm
-    final diffX = e2.x - e1.x;
-    final diffY = e2.y - e1.y;
-    final distBetween = sqrt(diffX * diffX + diffY * diffY);
-    final normX = diffX / distBetween;
-    final normY = diffY / distBetween;
-
-    final p = 2 * (e1.dx * normX + e1.dy * normY - e2.dx * normX - e2.dy * normY) / (e1.mass + e2.mass);
-
-    e1.dx -= p * e2.mass * normX;
-    e1.dy -= p * e2.mass * normY;
-    e2.dx += p * e1.mass * normX;
-    e2.dy += p * e1.mass * normY;
-
-  */
-// TODO: Move to entity?
-  
+  }  
 }
 
 export class Level {
@@ -186,13 +165,6 @@ export class Level {
   }
 
   update( dt ) {
-    
-    
-    // const segments = [ ...this.walls.map( w => w.segment ), ...this.paddles.map( p => p.segment ), ...this.balls ];
-    
-    // TODO: Move the step-by-step code back here.
-    // Find the first collision out of all the possible collisions, 
-    // run the simulation to that point, do the bounce, then go again
     let lastHit;
 
     for ( let tries = 0; dt > 0 && tries < 10; tries ++ ) {   // don't get stuck forever
@@ -210,25 +182,32 @@ export class Level {
         }
       }
 
-      const closestHit = hits.reduce( 
+      const hit = hits.reduce( 
         ( closest, nextHit ) => 0 < nextHit.time && nextHit.time < closest.time ? nextHit : closest,
         { time: Infinity }
       );
 
-      if ( 0 < closestHit.time && closestHit.time <= dt ) {
-        lastHit = closestHit;
+      if ( 0 < hit.time && hit.time <= dt ) {
+        lastHit = hit;
         
-        this.balls.forEach( b => b.update( closestHit.time ) );
-        this.paddles.forEach( p => p.update( closestHit.time ) );
-        dt -= closestHit.time;
+        this.balls.forEach( b => b.update( hit.time ) );
+        this.paddles.forEach( p => p.update( hit.time ) );
+        dt -= hit.time;
 
-        // if ( closestHit.segment.owner ) {
-        //   setTimeout( () => this.respawn(), 1000 );
-        //   closestHit.segment.owner.scoreUI.innerText --;
-        // }
-        // else {
-          closestHit.entities.forEach( e => e.bounceFrom?.( closestHit ) );
-        // }
+        const e1 = hit.entities[ 0 ], e2 = hit.entities[ 1 ];
+
+        const p = 2 * ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
+                        ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
+        
+        if ( e1.dx ) {
+          e1.dx -= p * hit.normal.x;
+          e1.dy -= p * hit.normal.y;
+        }
+        
+        if ( e2.dx ) {
+          e2.dx += p * hit.normal.x;
+          e2.dy += p * hit.normal.y;  
+        }
       }
       else {
         this.balls.forEach( b => b.update( dt ) );
