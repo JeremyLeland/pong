@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../style.css">
+
+<body>
+</body>
+
+<script type="module">
+
+  import { Game } from '../src/Game.js';
+  import { Segment } from '../src/Segment.js';
+  import { Paddle, Wall, Ball, Level } from '../src/Pong.js';
+
+  const level = new Level();
+
+  const octogon = [ 
+    [ -1.0,  0.25 ], [ -0.25,  1.0 ], [  0.25,  1.0 ], [  1.0,  0.25 ],
+    [  1.0, -0.25 ], [  0.25, -1.0 ], [ -0.25, -1.0 ], [ -1.0, -0.25 ],
+  ];
+
+  level.addWallsFromPoints( 
+    octogon.map( e => [ 
+      e[ 0 ] * window.innerWidth / 3, 
+      e[ 1 ] * window.innerHeight / 3 
+    ] ) 
+  );
+  
+
+  level.balls.push( new Ball( { x: -100, y: 0, dx: .2, dy: 0.1, fillStyle: 'yellow' } ) );
+  // level.balls.push( new Ball( { x: 100, y: 5, dx: -.2, dy: 0, fillStyle: 'orange' } ) );
+  // level.balls.push( new Ball( { x: 80, y: 25, dx: -.2, dy: .1, fillStyle: 'red' } ) );
+  
+  
+  const game = new Game();
+  game.update = ( dt ) => {
+    level.update( dt );
+  };
+
+  game.draw = ( ctx ) => {
+    ctx.save();
+
+    ctx.translate( window.innerWidth / 2, window.innerHeight / 2 );
+
+    level.draw( ctx );
+
+    ctx.restore();
+  };
+
+
+</script>
+
