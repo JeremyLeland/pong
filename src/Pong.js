@@ -199,14 +199,14 @@ export class Level {
         const p = 2 * ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
                         ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
         
-        if ( e1.dx ) {
-          e1.dx -= p * hit.normal.x;
-          e1.dy -= p * hit.normal.y;
+        if ( e1.mass ) {
+          e1.dx -= p * e1.mass * hit.normal.x;
+          e1.dy -= p * e1.mass * hit.normal.y;
         }
         
-        if ( e2.dx ) {
-          e2.dx += p * hit.normal.x;
-          e2.dy += p * hit.normal.y;  
+        if ( e2.mass ) {
+          e2.dx += p * e2.mass * hit.normal.x;
+          e2.dy += p * e2.mass * hit.normal.y;  
         }
       }
       else {
