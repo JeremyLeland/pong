@@ -121,9 +121,6 @@ export class Wall extends Entity {
 }
 
 export class Ball extends Entity {
-  width = 10;
-  height = 10;
-  radius = 10;
   path = new Path2D( 'M -1 0 A 1 1 0 0 1 1 0 A 1 1 0 0 1 -1 0' );
 
   dx = 0;
@@ -134,6 +131,9 @@ export class Ball extends Entity {
     super( info );
     this.respawn();
     Object.assign( this, info );
+
+    this.width = this.radius;
+    this.height = this.radius;
   }
 
   respawn() {
@@ -148,7 +148,7 @@ export class Ball extends Entity {
   update( dt ) {
     this.x += this.dx * dt;
     this.y += this.dy * dt;
-  }  
+  }
 }
 
 export class Level {
@@ -211,21 +211,25 @@ export class Level {
 
         const f = 1, r = 1;
 
-        const vDotN = ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
-                      ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / 
-                      ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
+        // All these ?? 0's are working around the fact that segments are not entities
+        // Is there a cleaner way to do this?
+        const m1 = e1.mass, m2 = e2.mass;
 
-        if ( e1.mass ) {
-          const uX = e1.mass * vDotN * hit.normal.x;
-          const uY = e1.mass * vDotN * hit.normal.y;
+        const vDotN = ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
+                        ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / 
+                      ( ( m1 ?? 0 ) + ( m2 ?? 0 ) );
+
+        if ( e1.dx ) {
+          const uX = ( m2 ?? m1 ) * vDotN * hit.normal.x;
+          const uY = ( m2 ?? m1 ) * vDotN * hit.normal.y;
           
           e1.dx = f * ( e1.dx - uX ) - r * uX;
           e1.dy = f * ( e1.dy - uY ) - r * uY;
         }
 
-        if ( e2.mass ) {
-          const uX = e2.mass * -vDotN * hit.normal.x;
-          const uY = e2.mass * -vDotN * hit.normal.y;
+        if ( e2.dx ) {
+          const uX = ( m1 ?? m2 ) * -vDotN * hit.normal.x;
+          const uY = ( m1 ?? m2 ) * -vDotN * hit.normal.y;
           
           e2.dx = f * ( e2.dx - uX ) - r * uX;
           e2.dy = f * ( e2.dy - uY ) - r * uY;
@@ -236,6 +240,10 @@ export class Level {
         this.balls.forEach( b => b.update( dt ) );
         this.paddles.forEach( p => p.update( dt ) );
         dt = 0;
+      }
+
+      if ( tries > 8 ) {
+        debugger;
       }
     }
   }

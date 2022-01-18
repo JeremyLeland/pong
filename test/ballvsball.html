@@ -23,10 +23,9 @@
     ] ) 
   );
   
-
-  level.balls.push( new Ball( { x: -50, y: 0, dx: .1, dy: 0, fillStyle: 'yellow' } ) );
-  level.balls.push( new Ball( { x: 50, y: 5, dx: -.1, dy: 0, fillStyle: 'orange' } ) );
-  level.balls.push( new Ball( { x: 80, y: 25, dx: -.2, dy: .1, fillStyle: 'red' } ) );
+  addBall(  50, 0, -0.1, 0, 5 );
+  addBall( -50, 10, 0.1, 0, 25 );
+  setInterval( () => addBall( 0, 0 ), 2000 );
   
   
   const game = new Game();
@@ -43,6 +42,18 @@
 
     ctx.restore();
   };
+
+  function addBall( 
+    x, y, 
+    dx = 0.5 * ( Math.random() - 0.5 ), 
+    dy = 0.5 * ( Math.random() - 0.5 ), 
+    size = Math.random() * 20 + 5 
+  ) {
+    level.balls.push( new Ball( { 
+      x: x, y: y, dx: dx, dy: dy, radius: size, mass: size,
+      fillStyle: `hsl( ${ Math.random() * 360 }, 100%, 50%)` 
+    } ) );
+  }
 
 
 </script>
