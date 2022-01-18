@@ -196,18 +196,41 @@ export class Level {
 
         const e1 = hit.entities[ 0 ], e2 = hit.entities[ 1 ];
 
-        const p = 2 * ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
-                        ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
+        // const p = 2 * ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
+        //                 ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
         
+        // if ( e1.mass ) {
+        //   e1.dx -= p * e1.mass * hit.normal.x;
+        //   e1.dy -= p * e1.mass * hit.normal.y;
+        // }
+        
+        // if ( e2.mass ) {
+        //   e2.dx += p * e2.mass * hit.normal.x;
+        //   e2.dy += p * e2.mass * hit.normal.y;  
+        // }
+
+        const f = 1, r = 1;
+
+        const vDotN = ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
+                      ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / 
+                      ( ( e1.mass ?? 0 ) + ( e2.mass ?? 0 ) );
+
         if ( e1.mass ) {
-          e1.dx -= p * e1.mass * hit.normal.x;
-          e1.dy -= p * e1.mass * hit.normal.y;
+          const uX = e1.mass * vDotN * hit.normal.x;
+          const uY = e1.mass * vDotN * hit.normal.y;
+          
+          e1.dx = f * ( e1.dx - uX ) - r * uX;
+          e1.dy = f * ( e1.dy - uY ) - r * uY;
+        }
+
+        if ( e2.mass ) {
+          const uX = e2.mass * -vDotN * hit.normal.x;
+          const uY = e2.mass * -vDotN * hit.normal.y;
+          
+          e2.dx = f * ( e2.dx - uX ) - r * uX;
+          e2.dy = f * ( e2.dy - uY ) - r * uY;
         }
         
-        if ( e2.mass ) {
-          e2.dx += p * e2.mass * hit.normal.x;
-          e2.dy += p * e2.mass * hit.normal.y;  
-        }
       }
       else {
         this.balls.forEach( b => b.update( dt ) );
@@ -216,6 +239,16 @@ export class Level {
       }
     }
   }
+
+  /*
+    const vDotN = this.dx * hit.normal.x + this.dy * hit.normal.y;
+    const uX = vDotN * hit.normal.x;
+    const uY = vDotN * hit.normal.y;
+    
+    this.dx = f * ( this.dx - uX ) - r * uX;
+    this.dy = f * ( this.dy - uY ) - r * uY;
+
+  */
 
   draw( ctx ) {
     this.walls.forEach( w => w.draw( ctx ) );
