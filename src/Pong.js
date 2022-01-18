@@ -215,21 +215,21 @@ export class Level {
         // Is there a cleaner way to do this?
         const m1 = e1.mass, m2 = e2.mass;
 
-        const vDotN = ( ( ( e1.dx ?? 0 ) - ( e2.dx ?? 0 ) ) * hit.normal.x + 
-                        ( ( e1.dy ?? 0 ) - ( e2.dy ?? 0 ) ) * hit.normal.y ) / 
-                      ( ( m1 ?? 0 ) + ( m2 ?? 0 ) );
+        const vDotN = ( ( e1.dx - e2.dx ) * hit.normal.x + 
+                        ( e1.dy - e2.dy ) * hit.normal.y ) / 
+                      ( m1 + m2 );
 
-        if ( e1.dx ) {
-          const uX = ( m2 ?? m1 ) * vDotN * hit.normal.x;
-          const uY = ( m2 ?? m1 ) * vDotN * hit.normal.y;
+        if ( e1 instanceof Entity ) {
+          const uX = m2 * vDotN * hit.normal.x;
+          const uY = m2 * vDotN * hit.normal.y;
           
           e1.dx = f * ( e1.dx - uX ) - r * uX;
           e1.dy = f * ( e1.dy - uY ) - r * uY;
         }
 
-        if ( e2.dx ) {
-          const uX = ( m1 ?? m2 ) * -vDotN * hit.normal.x;
-          const uY = ( m1 ?? m2 ) * -vDotN * hit.normal.y;
+        if ( e2 instanceof Entity ) {
+          const uX = m1 * -vDotN * hit.normal.x;
+          const uY = m1 * -vDotN * hit.normal.y;
           
           e2.dx = f * ( e2.dx - uX ) - r * uX;
           e2.dy = f * ( e2.dy - uY ) - r * uY;

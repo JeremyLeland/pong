@@ -1,4 +1,11 @@
 export class Segment {
+  // Allow segments to be used in collision code
+  dx = 0;
+  dy = 0;
+  mass = Number.MAX_VALUE;
+
+  // TODO: Give segments a reference to owner, then put the dx/dy/mass there?
+
   constructor( x1, y1, x2, y2 ) {
     this.setPoints( x1, y1, x2, y2 );
   }
